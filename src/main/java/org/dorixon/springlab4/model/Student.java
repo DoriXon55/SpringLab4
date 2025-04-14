@@ -17,12 +17,13 @@ import java.util.Set;
        indexes = {
         @Index(name="idx_nazwisko", columnList = "nazwisko", unique = false),
         @Index(name = "idx_nr_indeksu", columnList = "nr_indeksu", unique = true)
-       })
+       }) //Indeksujemy kolumny, które są najczęściej wykorzystywane do wyszukiwania studentów
 public class Student {
     @Id
-    @GeneratedValue
-    @Column(name="student_id")
-    private Integer student_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   
+    @Column(name = "student_id")
+    private Integer studentId;
 
     @Column(nullable = false, length = 50)
     private String imie;

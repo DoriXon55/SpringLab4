@@ -14,7 +14,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.dorixon.springlab4.controller.ProjektRestController;
 import org.dorixon.springlab4.model.Projekt;
+import org.dorixon.springlab4.service.ProjektService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,7 +36,7 @@ public class ProjektRestControllerUnitTest {
     @Mock
     private ProjektService mockProjektService;
     @InjectMocks
-    private ProjektController projectController;
+    private ProjektRestController projectController;
 
     @Test
     void getProject_whenValidId_shouldReturnGivenProject() {

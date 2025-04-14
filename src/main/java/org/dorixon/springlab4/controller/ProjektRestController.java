@@ -28,14 +28,29 @@ public class ProjektRestController {
     private ProjektService projektService;
 
     @GetMapping("/projekty/{projektId}")
-    ResponseEntity<Projekt> getProjekt(@PathVariable("projektId") Integer projektId)
+    public ResponseEntity<Projekt> getProjekt(@PathVariable("projektId") Integer projektId)
     {
         return ResponseEntity.of(projektService.getProjekt(projektId));
     }
 
     @PostMapping(path = "/projekty")
-    ResponseEntity<Void> createProjekt(@Valid @RequestBody Projekt projekt)
-    {
+    public ResponseEntity<Void> createProjekt(@Valid @RequestBody Projekt projekt) {
+        // Clear IDs to force creation of new entities
+        projekt.setProjektId(null);
+
+        if (projekt.getStudenci() != null) {
+            projekt.getStudenci().forEach(s -> {
+                s.setStudentId(null); // Use correct field name after updating Student.java
+            });
+        }
+
+        if (projekt.getZadania() != null) {
+            projekt.getZadania().forEach(z -> {
+                z.setZadanieId(null);
+                z.setProjekt(projekt);
+            });
+        }
+
         Projekt createdProjekt = projektService.setProjekt(projekt);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{projektId}")
@@ -67,7 +82,7 @@ public class ProjektRestController {
     }
 
     @GetMapping(value = "/projekty")
-    Page<Projekt> getProjekty(Pageable pageable)
+    public Page<Projekt> getProjekty(Pageable pageable)
     {
         return projektService.getProjekty(pageable);
     }

@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,25 +46,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser(username = "admin", password = "admin")
 public class ProjektRestControllerIntegrationTest {
-// Uwaga! Test wymaga poniższego konstruktora w klasie Projekt, dodaj jeżeli nie został jeszcze zdefiniowany.
-// public Projekt(Integer projektId, String nazwa, String opis, LocalDateTime dataCzasUtworzenia, LocalDate
-//dataOddania){
-// ...
-//}
-// --- URUCHAMIANIE TESTÓW ---
-// ABY URUCHOMIĆ TESTY KLIKNIJ NA NAZWIE KLASY PRAWYM PRZYCISKIEM
-// MYSZY I WYBIERZ Z MENU 'Run As' -> 'Gradle Test' LUB PO USTAWIENIU
-// KURSORA NA NAZWIE KLASY WCIŚNIJ SKRÓT 'CTRL+ALT+X' A PÓŹNIEJ 'G'
-// MOŻNA RÓWNIEŻ ANALOGICZNIE URUCHAMIAĆ POJEDYNCZE METODY KLIKAJĄC
-// WCZEŚNIEJ NA ICH NAZWĘ
 private final String apiPath = "/api/projekty";
-    @MockBean
-    private ProjektService mockProjektService; // tzw. mock (czyli obiekt, którego używa się zamiast rzeczywistej
-    // implementacji) serwisu wykorzystywany przy testowaniu kontrolera
+    @Mock
+    private ProjektService mockProjektService; 
     @Autowired
     private MockMvc mockMvc;
     private JacksonTester<Projekt> jacksonTester;
@@ -94,8 +85,7 @@ private final String apiPath = "/api/projekty";
     public void getProjects_whenTwoAvailable_shouldReturnContentWithPagingParams() throws Exception {
         Projekt projekt1 = new Projekt(1, "Nazwa1", "Opis1", LocalDateTime.now(), LocalDate.of(2024, 6, 1));
         Projekt projekt2 = new Projekt(2, "Nazwa2", "Opis2", LocalDateTime.now(), LocalDate.of(2024, 6, 2));
-        Projekt projekt1 = new Projekt(1, "Nazwa1", "Opis1", LocalDateTime.now(), LocalDate.of(2024, 6, 1));
-        Projekt projekt2 = new Projekt(2, "Nazwa2", "Opis2", LocalDateTime.now(), LocalDate.of(2024, 6, 2));
+     
         Page<Projekt> page = new PageImpl<>(List.of(projekt1, projekt2));
         when(mockProjektService.getProjekty(any(Pageable.class))).thenReturn(page);
         mockMvc.perform(get(apiPath).contentType(MediaType.APPLICATION_JSON))

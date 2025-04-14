@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name="zadanie")
 public class Zadanie {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="zadanie_id")
     private Integer zadanieId;
 
@@ -34,9 +34,8 @@ public class Zadanie {
     private String opis;
 
     @CreatedDate
-    @Column(name="dataczas_oddania", nullable = false, updatable = false)
-    private LocalDateTime dataczas_dodania;
-
+    @Column(name="dataczas_dodania", nullable = false, updatable = false)
+    private LocalDateTime dataczasDodania; // Make sure column name matches field purpose
 
 
 }
