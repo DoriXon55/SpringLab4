@@ -35,7 +35,7 @@ public class Zadanie {
 
     @CreatedDate
     @Column(name="dataczas_dodania", nullable = false, updatable = false)
-    private LocalDateTime dataczasDodania; // Make sure column name matches field purpose
+    private LocalDateTime dataczasDodania;
 
 
 }

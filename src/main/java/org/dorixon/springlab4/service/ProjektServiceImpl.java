@@ -33,17 +33,11 @@ public class ProjektServiceImpl implements ProjektService{
 
     @Override
     public Projekt setProjekt(Projekt projekt) {
-        // Clear IDs for new entities
         if (projekt.getProjektId() != null && projekt.getProjektId() == 0) {
             projekt.setProjektId(null);
         }
 
-        // Always set creation date
-        if (projekt.getDataCzasUtworzenia() == null) {
-            projekt.setDataCzasUtworzenia(LocalDateTime.now());
-        }
 
-        // Handle student entities
         if (projekt.getStudenci() != null) {
             Set<Student> managedStudents = new HashSet<>();
             for (Student student : projekt.getStudenci()) {
@@ -62,7 +56,6 @@ public class ProjektServiceImpl implements ProjektService{
             projekt.setStudenci(managedStudents);
         }
 
-        // Handle zadania entities
         if (projekt.getZadania() != null) {
             for (Zadanie zadanie : projekt.getZadania()) {
                 if (zadanie.getZadanieId() != null && zadanie.getZadanieId() == 0) {

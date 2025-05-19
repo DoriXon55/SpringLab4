@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,7 +52,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @WithMockUser(username = "admin", password = "admin")
 public class ProjektRestControllerIntegrationTest {
 private final String apiPath = "/api/projekty";
-    @Mock
+    @MockBean
     private ProjektService mockProjektService; 
     @Autowired
     private MockMvc mockMvc;

@@ -33,29 +33,19 @@ public class ProjektRestController {
         return ResponseEntity.of(projektService.getProjekt(projektId));
     }
 
-    @PostMapping(path = "/projekty")
+    @PostMapping("/projekty")
     public ResponseEntity<Void> createProjekt(@Valid @RequestBody Projekt projekt) {
-        // Clear IDs to force creation of new entities
-        projekt.setProjektId(null);
-
-        if (projekt.getStudenci() != null) {
-            projekt.getStudenci().forEach(s -> {
-                s.setStudentId(null); // Use correct field name after updating Student.java
-            });
+        Projekt savedProjekt = projektService.setProjekt(projekt);
+        if (savedProjekt == null) {
+            return ResponseEntity.badRequest().build();
         }
 
-        if (projekt.getZadania() != null) {
-            projekt.getZadania().forEach(z -> {
-                z.setZadanieId(null);
-                z.setProjekt(projekt);
-            });
-        }
-
-        Projekt createdProjekt = projektService.setProjekt(projekt);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{projektId}")
-                .buildAndExpand(createdProjekt.getProjektId())
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedProjekt.getProjektId())
                 .toUri();
+
         return ResponseEntity.created(location).build();
     }
 
@@ -64,6 +54,7 @@ public class ProjektRestController {
     {
         return projektService.getProjekt(projektyId).map(
                 p -> {
+                    projekt.setProjektId(projektyId);
                     projektService.setProjekt(projekt);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 }

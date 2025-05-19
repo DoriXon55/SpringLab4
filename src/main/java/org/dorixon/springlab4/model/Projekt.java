@@ -1,10 +1,9 @@
 package org.dorixon.springlab4.model;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.management.ConstructorParameters;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,27 +31,27 @@ import java.util.Set;
 public class Projekt {
 
 
-    public Projekt(Integer projektId, String nazwa, String opis, LocalDate dataOddania) {
+    public Projekt(Integer projektId, String nazwa, String opis, LocalDate lastModifiedDate) {
         this.projektId = projektId;
         this.nazwa = nazwa;
         this.opis = opis;
-        this.dataCzasUtworzenia = LocalDateTime.now();
-        this.dataOddania = dataOddania != null ? dataOddania.atStartOfDay() : null;
+        this.createdDate = LocalDateTime.now();
+        this.lastModifiedDate = lastModifiedDate != null ? lastModifiedDate.atStartOfDay() : null;
     }
 
     public Projekt(String nazwa, String opis, LocalDate of) {
         this.nazwa = nazwa;
         this.opis = opis;
-        this.dataCzasUtworzenia = LocalDateTime.now();
+        this.createdDate = LocalDateTime.now();
     }
     
-    public Projekt(Integer projektId, String nazwa, String opis, LocalDateTime dataCzasUtworzenia, LocalDate dataOddania)
+    public Projekt(Integer projektId, String nazwa, String opis, LocalDateTime createdDate, LocalDate lastModifiedDate)
     {
         this.projektId = projektId;
         this.nazwa = nazwa;
         this.opis = opis;
-        this.dataCzasUtworzenia = dataCzasUtworzenia;
-        this.dataOddania = dataOddania.atStartOfDay();
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate.atStartOfDay();
     }
 
 
@@ -62,6 +60,8 @@ public class Projekt {
     @Column(name="projekt_id")
     private Integer projektId;
 
+
+    @NotBlank(message = "Nazwa projektu nie może być pusta")
     @Column(nullable = false, length = 50)
     private String nazwa;
 
@@ -70,14 +70,19 @@ public class Projekt {
 
     @CreatedDate
     @Column(name="dataczas_utworzenia", nullable = false, updatable = false)
-    private LocalDateTime dataCzasUtworzenia = LocalDateTime.now(); 
+    private LocalDateTime createdDate;
 
-    @JsonProperty("dataOddania")
     @LastModifiedDate
     @Column(name="dataczas_modyfikacji", insertable = false)
-    private LocalDateTime dataOddania;
+    private LocalDateTime lastModifiedDate;
 
 
+    public Projekt(int i, String nazwa1, String opis1, LocalDate of) {
+        this.projektId = i;
+        this.nazwa = nazwa1;
+        this.opis = opis1;
+        this.lastModifiedDate = of.atStartOfDay();
+    }
     @OneToMany(mappedBy = "projekt", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"projekt"})
     private List<Zadanie> zadania;
@@ -92,5 +97,4 @@ public class Projekt {
     private Set<Student> studenci;
 
 
-   
 }
