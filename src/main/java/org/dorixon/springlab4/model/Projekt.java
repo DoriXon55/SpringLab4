@@ -54,6 +54,13 @@ public class Projekt {
         this.lastModifiedDate = lastModifiedDate.atStartOfDay();
     }
 
+    public Projekt(int i, String nazwa1, String opis1, LocalDate of) {
+        this.projektId = i;
+        this.nazwa = nazwa1;
+        this.opis = opis1;
+        this.lastModifiedDate = of.atStartOfDay();
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,14 +82,12 @@ public class Projekt {
     @LastModifiedDate
     @Column(name="dataczas_modyfikacji", insertable = false)
     private LocalDateTime lastModifiedDate;
+    
+    @Column(name = "data_oddania")
+    private LocalDate dataOddania;
 
 
-    public Projekt(int i, String nazwa1, String opis1, LocalDate of) {
-        this.projektId = i;
-        this.nazwa = nazwa1;
-        this.opis = opis1;
-        this.lastModifiedDate = of.atStartOfDay();
-    }
+
     @OneToMany(mappedBy = "projekt", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"projekt"})
     private List<Zadanie> zadania;
