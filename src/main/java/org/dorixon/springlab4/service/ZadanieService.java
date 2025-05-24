@@ -13,4 +13,6 @@ public interface ZadanieService {
     void deleteZadanie(Integer zadanieId);
     Page<Zadanie> getZadania(Pageable pageable);
     Page<Zadanie> getZadaniaByProjektId(Integer projektId, Pageable pageable);
+
+    Page<Zadanie> findByNazwaContaining(String nazwa, Pageable pageable);
 }

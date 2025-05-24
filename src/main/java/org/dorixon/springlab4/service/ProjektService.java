@@ -13,4 +13,16 @@ public interface ProjektService
     void deleteProjekt(Integer projektId);
     Page<Projekt> getProjekty(Pageable pageable);
     Page<Projekt> searchByNazwa(String nazwa, Pageable pageable);
+
+    void addZadanieToProjekt(Integer projektId, Integer zadanieId);
+
+    void removeZadanieFromProjekt(Integer projektId, Integer zadanieId);
+
+    void removeStudentFromProjekt(Integer projektId, Integer studentId);
+
+    void addStudentToProjekt(Integer projektId, Integer studentId);
+
+    Long getZadaniaCount(Integer projektId);
+
+    Long getStudentCount(Integer projektId);
 }

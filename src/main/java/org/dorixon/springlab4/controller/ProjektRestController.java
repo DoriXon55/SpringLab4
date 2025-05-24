@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 
 @RestController
@@ -23,9 +26,7 @@ import java.net.URI;
 
 @AllArgsConstructor
 public class ProjektRestController {
-
-
-    private ProjektService projektService;
+    private final ProjektService projektService;
 
     @GetMapping("/projekty/{projektId}")
     public ResponseEntity<Projekt> getProjekt(@PathVariable("projektId") Integer projektId)
@@ -82,6 +83,43 @@ public class ProjektRestController {
     Page<Projekt> getProjektByNazwa(@RequestParam(name="nazwa") String nazwa, Pageable pageable)
     {
         return projektService.searchByNazwa(nazwa, pageable);
+    }
+    
+    @PostMapping("/projekty/{projektId}/zadania/{zadanieId}")
+    public ResponseEntity<Void> addZadanieToProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("zadanieId") Integer zadanieId)
+    {
+        projektService.addZadanieToProjekt(projektId, zadanieId);
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping("/projekty/{projektId}/zadania/{zadanieId}")
+    public ResponseEntity<Void> removeZadanieFromProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("zadanieId") Integer zadanieId)
+    {
+        projektService.removeZadanieFromProjekt(projektId, zadanieId);
+        return ResponseEntity.ok().build();
+    }
+    
+    @PostMapping("projekty/{projektId}/studenci/{studentId}")
+    public ResponseEntity<Void> addStudentToProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("studentId") Integer studentId)
+    {
+        projektService.addStudentToProjekt(projektId, studentId);
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping("projekty/{projektId}/studenci/{studentId}")
+    public ResponseEntity<Void> removeStudentFromProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("studentId") Integer studentId)
+    {
+        projektService.removeStudentFromProjekt(projektId, studentId);
+        return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping("/projekty/{projektId}/stats")
+    public ResponseEntity<Map<String, Long>> getProjektStats(@PathVariable("projektId") Integer projektId)
+    {
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("zadaniaCount", projektService.getZadaniaCount(projektId));
+        stats.put("studentCount", projektService.getStudentCount(projektId));
+        return ResponseEntity.ok(stats);
     }
 
 

@@ -2,9 +2,9 @@ package org.dorixon.springlab4.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.dorixon.springlab4.model.Student;
 import org.dorixon.springlab4.service.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,16 +15,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 @Tag(name = "Student")
 public class StudentRestController {
+    private final StudentService studentService;
 
-    private StudentService studentService;
 
-    @Autowired
-    public StudentRestController(StudentService studentService) {
-        this.studentService = studentService;
-    }
 
     @GetMapping("/studenci/{studentId}")
     ResponseEntity<Student> getStudent(@PathVariable("studentId") Integer studentId) {

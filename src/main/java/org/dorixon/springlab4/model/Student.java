@@ -44,18 +44,4 @@ public class Student {
     @JsonIgnoreProperties({"studenci"})
 
     private Set<Projekt> projekty;
-
-
-
-    public Student(String imie, String nazwisko, String nrIndeksu, Boolean stacjonarny)
-    {
-        this.imie = imie;
-        this.nazwisko = nazwisko;
-        this.nrIndeksu = nrIndeksu;
-        this.stacjonarny = stacjonarny;
-    }
-
-
-
-
 }

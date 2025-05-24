@@ -1,6 +1,7 @@
 package org.dorixon.springlab4.controller;
 import java.net.URI;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.dorixon.springlab4.model.Zadanie;
 import org.dorixon.springlab4.service.ZadanieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Zadanie")
+@AllArgsConstructor
 public class ZadanieRestController {
-
-    private ZadanieService zadanieService;
-
-    @Autowired
-    public ZadanieRestController(ZadanieService zadanieService) {
-        this.zadanieService = zadanieService;
-    }
+    private final ZadanieService zadanieService;
+    
 
     @GetMapping("/zadania/{zadanieId}")
     ResponseEntity<Zadanie> getZadanie(@PathVariable("zadanieId") Integer zadanieId) {
@@ -66,5 +63,11 @@ public class ZadanieRestController {
     @GetMapping(value = "/projekty/{projektId}/zadania")
     Page<Zadanie> getZadaniaByProjekt(@PathVariable("projektId") Integer projektId, Pageable pageable) {
         return zadanieService.getZadaniaByProjektId(projektId, pageable);
+    }
+
+
+    @GetMapping(value = "/zadania/szukaj")
+    Page<Zadanie> searchZadania(@RequestParam("nazwa") String nazwa, Pageable pageable) {
+        return zadanieService.findByNazwaContaining(nazwa, pageable);
     }
 }

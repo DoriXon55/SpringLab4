@@ -13,9 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
@@ -70,9 +68,7 @@ public class ProjektServiceImpl implements ProjektService{
 
     @Override
     public void deleteProjekt(Integer projektId) {
-        for (Zadanie zadanie : zadanieRepository.findZadaniaProjektu(projektId)) {
-            zadanieRepository.delete(zadanie);
-        }
+        zadanieRepository.deleteAll(zadanieRepository.findZadaniaProjektu(projektId));
         projektRepository.deleteById(projektId);
     }
 
@@ -84,5 +80,89 @@ public class ProjektServiceImpl implements ProjektService{
     @Override
     public Page<Projekt> searchByNazwa(String nazwa, Pageable pageable) {
         return projektRepository.findByNazwaContainingIgnoreCase(nazwa, pageable);
+    }
+
+    @Override
+    public void addZadanieToProjekt(Integer projektId, Integer zadanieId) {
+        Projekt projekt = projektRepository.findById(projektId)
+                .orElseThrow(() -> new IllegalArgumentException("Projekt o id " + projektId + " nie istnieje"));
+        Zadanie zadanie = zadanieRepository.findById(zadanieId)
+                .orElseThrow(() -> new IllegalArgumentException("Zadanie o id " + zadanieId + " nie istnieje"));
+
+        zadanie.setProjekt(projekt);
+        if (projekt.getZadania() == null) {
+            projekt.setZadania(new ArrayList<>());
+        }
+        projekt.getZadania().add(zadanie);
+
+        zadanieRepository.save(zadanie);
+        projektRepository.save(projekt);
+    }
+
+    @Override
+    public void removeZadanieFromProjekt(Integer projektId, Integer zadanieId) {
+        Projekt projekt = projektRepository.findById(projektId)
+                .orElseThrow(() -> new IllegalArgumentException("Projekt o id " + projektId + " nie istnieje"));
+        Zadanie zadanie = zadanieRepository.findById(zadanieId)
+                .orElseThrow(() -> new IllegalArgumentException("Zadanie o id " + zadanieId + " nie istnieje"));
+
+        if (projekt.getZadania() != null) {
+            projekt.getZadania().remove(zadanie);
+        }
+
+        zadanie.setProjekt(null);
+
+        zadanieRepository.save(zadanie);
+        projektRepository.save(projekt);
+    }
+
+    @Override
+    public void removeStudentFromProjekt(Integer projektId, Integer studentId) {
+        Projekt projekt = projektRepository.findById(projektId)
+                .orElseThrow(() -> new IllegalArgumentException("Projekt o id " + projektId + " nie istnieje"));
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Student o id " + studentId + " nie istnieje"));
+
+        if (projekt.getStudenci() != null) {
+            projekt.getStudenci().remove(student);
+        }
+
+        if (student.getProjekty() != null) {
+            student.getProjekty().remove(projekt);
+        }
+
+        studentRepository.save(student);
+        projektRepository.save(projekt);
+    }
+
+    @Override
+    public void addStudentToProjekt(Integer projektId, Integer studentId) {
+        Projekt projekt = projektRepository.findById(projektId)
+                .orElseThrow(() -> new IllegalArgumentException("Projekt o id " + projektId + " nie istnieje"));
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Student o id " + studentId + " nie istnieje"));
+
+        if (projekt.getStudenci() == null) {
+            projekt.setStudenci(new HashSet<>());
+        }
+        projekt.getStudenci().add(student);
+
+        if (student.getProjekty() == null) {
+            student.setProjekty(new HashSet<>());
+        }
+        student.getProjekty().add(projekt);
+
+        studentRepository.save(student);
+        projektRepository.save(projekt);
+    }
+
+    @Override
+    public Long getZadaniaCount(Integer projektId) {
+        return zadanieRepository.countByProjektProjektId(projektId);
+    }
+
+    @Override
+    public Long getStudentCount(Integer projektId) {
+        return studentRepository.countByProjektyProjektId(projektId);
     }
 }
