@@ -1,10 +1,10 @@
 package org.dorixon.springlab4.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.dorixon.springlab4.model.Student;
 import org.dorixon.springlab4.service.StudentService;
+import org.dorixon.springlab4.validation.ValidationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,16 +20,18 @@ import java.net.URI;
 @Tag(name = "Student")
 public class StudentRestController {
     private final StudentService studentService;
+    private final ValidationService<Student> validator;
 
 
 
     @GetMapping("/studenci/{studentId}")
-    ResponseEntity<Student> getStudent(@PathVariable("studentId") Integer studentId) {
+    ResponseEntity<Student> getStudent(@PathVariable Integer studentId) {
         return ResponseEntity.of(studentService.getStudent(studentId));
     }
 
     @PostMapping(path = "/studenci")
-    ResponseEntity<Void> createStudent(@Valid @RequestBody Student student) {
+    ResponseEntity<Void> createStudent(@RequestBody Student student) {
+        validator.validate(student);
         Student createdStudent = studentService.setStudent(student);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{studentId}").buildAndExpand(createdStudent.getStudentId()).toUri();
@@ -37,8 +39,9 @@ public class StudentRestController {
     }
 
     @PutMapping("/studenci/{studentId}")
-    public ResponseEntity<Void> updateStudent(@Valid @RequestBody Student student,
-                                              @PathVariable("studentId") Integer studentId) {
+    public ResponseEntity<Void> updateStudent(@RequestBody Student student,
+                                              @PathVariable Integer studentId) {
+        validator.validate(student);
         return studentService.getStudent(studentId)
                 .map(s -> {
                     student.setStudentId(studentId);
@@ -49,7 +52,7 @@ public class StudentRestController {
     }
 
     @DeleteMapping("/studenci/{studentId}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable("studentId") Integer studentId) {
+    public ResponseEntity<Void> deleteStudent(@PathVariable Integer studentId) {
         return studentService.getStudent(studentId).map(s -> {
             studentService.deleteStudent(studentId);
             return new ResponseEntity<Void>(HttpStatus.OK);
@@ -62,7 +65,7 @@ public class StudentRestController {
     }
 
     @GetMapping(value = "/projekty/{projektId}/studenci")
-    Page<Student> getStudenciByProjekt(@PathVariable("projektId") Integer projektId, Pageable pageable) {
+    Page<Student> getStudenciByProjekt(@PathVariable Integer projektId, Pageable pageable) {
         return studentService.getStudenciByProjektId(projektId, pageable);
     }
 

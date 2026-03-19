@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
     Optional<Student> findByNrIndeksu(String nrIndeksu);
+
+    Optional<Student> findByEmail(String email);
     Page<Student> findByNrIndeksuStartsWith(String nrIndeksu, Pageable pageable);
     Page<Student> findByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable);
 
@@ -16,4 +18,5 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     Page<Student> findByProjektyProjektId(Integer projektId, Pageable pageable);
 
     Long countByProjektyProjektId(Integer projektId);
+
 }

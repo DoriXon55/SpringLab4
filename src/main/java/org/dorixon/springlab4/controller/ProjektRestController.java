@@ -1,10 +1,10 @@
 package org.dorixon.springlab4.controller;
 
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.dorixon.springlab4.model.Projekt;
 import org.dorixon.springlab4.service.ProjektService;
+import org.dorixon.springlab4.validation.ValidationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 
@@ -27,15 +26,17 @@ import java.util.Map;
 @AllArgsConstructor
 public class ProjektRestController {
     private final ProjektService projektService;
+    private final ValidationService<Projekt> validator;
 
     @GetMapping("/projekty/{projektId}")
-    public ResponseEntity<Projekt> getProjekt(@PathVariable("projektId") Integer projektId)
+    public ResponseEntity<Projekt> getProjekt(@PathVariable Integer projektId)
     {
         return ResponseEntity.of(projektService.getProjekt(projektId));
     }
 
     @PostMapping("/projekty")
-    public ResponseEntity<Void> createProjekt(@Valid @RequestBody Projekt projekt) {
+    public ResponseEntity<Void> createProjekt( @RequestBody Projekt projekt) {
+        validator.validate(projekt);
         Projekt savedProjekt = projektService.setProjekt(projekt);
         if (savedProjekt == null) {
             return ResponseEntity.badRequest().build();
@@ -43,7 +44,7 @@ public class ProjektRestController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
+                .path("/{projektId}")
                 .buildAndExpand(savedProjekt.getProjektId())
                 .toUri();
 
@@ -51,8 +52,9 @@ public class ProjektRestController {
     }
 
     @PutMapping("/projekty/{projektyId}")
-    public ResponseEntity<Void> updateProjekt(@Valid @RequestBody Projekt projekt, @PathVariable("projektyId") Integer projektyId)
+    public ResponseEntity<Void> updateProjekt( @RequestBody Projekt projekt, @PathVariable Integer projektyId)
     {
+        validator.validate(projekt);
         return projektService.getProjekt(projektyId).map(
                 p -> {
                     projekt.setProjektId(projektyId);
@@ -63,7 +65,7 @@ public class ProjektRestController {
     }
 
     @DeleteMapping("/projekty/{projektId}")
-    public ResponseEntity<Void> deleteProjekt(@PathVariable("projektId") Integer projektId)
+    public ResponseEntity<Void> deleteProjekt(@PathVariable Integer projektId)
     {
         return projektService.getProjekt(projektId).map(
                 p -> {
@@ -86,35 +88,35 @@ public class ProjektRestController {
     }
     
     @PostMapping("/projekty/{projektId}/zadania/{zadanieId}")
-    public ResponseEntity<Void> addZadanieToProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("zadanieId") Integer zadanieId)
+    public ResponseEntity<Void> addZadanieToProjekt(@PathVariable Integer projektId, @PathVariable Integer zadanieId)
     {
         projektService.addZadanieToProjekt(projektId, zadanieId);
         return ResponseEntity.ok().build();
     }
     
     @DeleteMapping("/projekty/{projektId}/zadania/{zadanieId}")
-    public ResponseEntity<Void> removeZadanieFromProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("zadanieId") Integer zadanieId)
+    public ResponseEntity<Void> removeZadanieFromProjekt(@PathVariable Integer projektId, @PathVariable Integer zadanieId)
     {
         projektService.removeZadanieFromProjekt(projektId, zadanieId);
         return ResponseEntity.ok().build();
     }
     
     @PostMapping("projekty/{projektId}/studenci/{studentId}")
-    public ResponseEntity<Void> addStudentToProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("studentId") Integer studentId)
+    public ResponseEntity<Void> addStudentToProjekt(@PathVariable Integer projektId, @PathVariable Integer studentId)
     {
         projektService.addStudentToProjekt(projektId, studentId);
         return ResponseEntity.ok().build();
     }
     
     @DeleteMapping("projekty/{projektId}/studenci/{studentId}")
-    public ResponseEntity<Void> removeStudentFromProjekt(@PathVariable("projektId") Integer projektId, @PathVariable("studentId") Integer studentId)
+    public ResponseEntity<Void> removeStudentFromProjekt(@PathVariable Integer projektId, @PathVariable Integer studentId)
     {
         projektService.removeStudentFromProjekt(projektId, studentId);
         return ResponseEntity.ok().build();
     }
     
     @GetMapping("/projekty/{projektId}/stats")
-    public ResponseEntity<Map<String, Long>> getProjektStats(@PathVariable("projektId") Integer projektId)
+    public ResponseEntity<Map<String, Long>> getProjektStats(@PathVariable Integer projektId)
     {
         Map<String, Long> stats = new HashMap<>();
         stats.put("zadaniaCount", projektService.getZadaniaCount(projektId));
