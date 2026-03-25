@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
@@ -39,6 +40,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -49,14 +51,18 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureJsonTesters
 @WithMockUser(username = "admin", password = "admin")
 public class ProjektRestControllerIntegrationTest {
 private final String apiPath = "/api/projekty";
-    @MockBean
+    @MockitoBean
     private ProjektService mockProjektService; 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
     private JacksonTester<Projekt> jacksonTester;
+
     @Test
     public void getProject_whenValidId_shouldReturnGivenProject() throws Exception {
         Projekt projekt = new Projekt(2, "Nazwa2", "Opis2", LocalDateTime.now(), LocalDate.of(2024, 6, 7));
